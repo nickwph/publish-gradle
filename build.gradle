@@ -1,9 +1,10 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'jacoco'
+apply plugin: 'signing'
 
 group 'com.nicholasworkshop'
-version '1.0.0'
+version '1.0.0-SNAPSHOT'
 
 repositories {
     jcenter()
@@ -29,4 +30,132 @@ install {
     }
 }
 
-test.dependsOn assemble
+test {
+    dependsOn assemble
+}
+
+task jarSources(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task jarJavadoc(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+artifacts {
+    archives jarSources, jarJavadoc
+}
+
+signing {
+    sign configurations.archives
+}
+
+task publishSonatype(type: Upload) {
+    group 'publish'
+    uploadDescriptor = true
+    configuration = configurations.archives
+    repositories {
+        mavenDeployer {
+            pom.groupId = project.group
+            pom.artifactId = project.install.repositories.mavenInstaller.pom.artifactId
+            pom.version = project.version
+            pom.project {
+                name 'Publish Gradle Plugin'
+                packaging 'jar'
+                description 'N/A'
+                url 'https://github.com/nickwph/publish-gradle'
+                scm {
+                    url 'https://github.com/nickwph/publish-gradle'
+                    connection 'scm:git@github.com:nickwph/publish-gradle.git'
+                    developerConnection 'scm:git@github.com:nickwph/publish-gradle.git'
+                }
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'nickwph'
+                        name 'Nicholas Wong'
+                    }
+                }
+            }
+            beforeDeployment { MavenDeployment deployment ->
+                project.signing.signPom(deployment)
+            }
+            def url;
+            if (!project.version.endsWith('SNAPSHOT')) {
+                url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            } else {
+                url = 'https://oss.sonatype.org/content/repositories/snapshots/'
+            }
+            String username = getGradleProperty('publish.maven.sonatype.username');
+            String password = getGradleProperty('publish.maven.sonatype.password')
+            repository(url: url) {
+                authentication(userName: username, password: password)
+            }
+        }
+    }
+}
+
+
+task publishBintray(type: Upload) {
+    group 'publish'
+    uploadDescriptor = true
+    configuration = configurations.archives
+    repositories {
+        mavenDeployer {
+            pom.groupId = project.group
+            pom.artifactId = project.install.repositories.mavenInstaller.pom.artifactId
+            pom.version = project.version
+            pom.project {
+                name 'Publish Gradle Plugin'
+                packaging 'jar'
+                description 'N/A'
+                url 'https://github.com/nickwph/publish-gradle'
+                scm {
+                    url 'https://github.com/nickwph/publish-gradle'
+                    connection 'scm:git@github.com:nickwph/publish-gradle.git'
+                    developerConnection 'scm:git@github.com:nickwph/publish-gradle.git'
+                }
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'nickwph'
+                        name 'Nicholas Wong'
+                    }
+                }
+            }
+            beforeDeployment { MavenDeployment deployment ->
+                project.signing.signPom(deployment)
+            }
+            def url;
+            if (!project.version.endsWith('SNAPSHOT')) {
+                url = 'https://api.bintray.com/maven/nickwph/maven/artifactid-gradle/;publish=1'
+            } else {
+                url = 'https://oss.jfrog.org/artifactory/list/oss-snapshot-local'
+            }
+            String username = getGradleProperty('publish.maven.bintray.username');
+            String password = getGradleProperty('publish.maven.bintray.apiKey')
+            String id = "bintray-$username-maven"
+            repository(id: id, url: url) {
+                authentication(userName: username, password: password)
+            }
+        }
+    }
+}
+
+String getGradleProperty(String name) {
+    return hasProperty(name) ? getProperty(name) : ""
+}
