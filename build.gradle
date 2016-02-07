@@ -1,0 +1,32 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'jacoco'
+
+group 'com.nicholasworkshop'
+version '1.0.0'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile 'com.android.tools.build:gradle:1.5.0'
+}
+
+jacocoTestReport {
+    name 'jacoco'
+    group 'report'
+    dependsOn test
+    reports.xml.enabled = true
+}
+
+install {
+    group 'publish'
+    repositories.mavenInstaller {
+        pom.artifactId = "gradle-maven"
+    }
+}
+
+test.dependsOn assemble
