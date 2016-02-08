@@ -61,7 +61,6 @@ public class PublishPlugin implements Plugin<Project> {
         upload.repositories.mavenInstaller {
             pom.artifactId = preferences.id
         }
-
         return upload
     }
 
