@@ -8,7 +8,6 @@ import org.gradle.api.Project
 /**
  * Created by nickwph on 1/28/16.
  */
-
 class PreferencesExtension {
 
     private Project project
@@ -40,6 +39,10 @@ class PreferencesExtension {
 
     void mavenTargets(Action<NamedDomainObjectContainer<MavenTarget>> action) {
         action.execute(mavenTargets)
+    }
+
+    void mavenTargets(Closure<NamedDomainObjectContainer<MavenTarget>> closure) {
+        mavenTargets.configure(closure)
     }
 
     void validate() {
