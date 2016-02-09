@@ -1,7 +1,6 @@
 test:
-  override:
-    - ./gradlew test jacoco
   post:
+    - ./gradlew jacoco
     - cp -r build/reports/tests $CIRCLE_ARTIFACTS/junit
     - cp -r build/reports/jacoco/test $CIRCLE_ARTIFACTS/jacoco
     - cp -r build/test-results $CIRCLE_TEST_REPORTS/junit

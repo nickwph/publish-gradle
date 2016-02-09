@@ -33,7 +33,6 @@ install {
 
 test {
     useTestNG()
-    dependsOn assemble
 }
 
 task jarSources(type: Jar) {
