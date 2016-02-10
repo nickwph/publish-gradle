@@ -29,7 +29,6 @@ public class PublishPluginTest {
             scmDeveloperConnection 'scmDeveloperConnection'
             developerId 'developerId'
             developerName 'developerName'
-            signing false
             licenses 'mit', 'apache-2.0'
             mavenTargets {
                 sonatype {
@@ -59,7 +58,6 @@ public class PublishPluginTest {
             id 'id'
             group 'group'
             version 'version'
-            signing false
             mavenTargets {
                 sonatype {
                     url 'releaseUrl'

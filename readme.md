@@ -41,6 +41,24 @@ publish {
 Please use keys defined by Github<br/>
 https://developer.github.com/v3/licenses/#list-all-licenses
 
+## Project Signing
+
+Signing is off by default. Enable it with:
+```
+signing true
+```
+
+Follow these tutorials to generate PGP keys
+http://central.sonatype.org/pages/working-with-pgp-signatures.html
+http://blog.sonatype.com/2010/01/how-to-generate-pgp-signatures-with-maven
+
+After that, add the following to gradle.properties (with your confidential info)
+```properties
+signing.keyId=<SIGNING_ID>
+signing.password=<PASSWORD>
+signing.secretKeyRingFile=<PATH>/.gnupg/secring.gpg
+```
+
 ## Advanced Usage
 
 ``` groovy
@@ -66,7 +84,7 @@ publish {
     // license
     licenses 'mit', 'apache-2.0'
     // signing
-    signing false
+    signing true
     // mavens
     mavenTargets {
         sonatype {

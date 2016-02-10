@@ -25,7 +25,7 @@ class PreferencesExtension {
     String scmDeveloperConnection
     String developerId
     String developerName
-    boolean signing
+    boolean signing = false
 
     PreferencesExtension(Project project) {
         this.project = project
@@ -43,7 +43,7 @@ class PreferencesExtension {
     void mavenTargets(Closure<NamedDomainObjectContainer<MavenTarget>> closure) {
         mavenTargets.configure(closure)
     }
-    
+
     List<License> getLicenses() {
         return licenses
     }
