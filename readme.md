@@ -1,11 +1,21 @@
 # Publish Gradle Plugin
-
-[![Circle CI](https://circleci.com/gh/nickwph/publish-gradle.svg?style=shield)](https://circleci.com/gh/nickwph/publish-gradle)
-[![codecov.io](https://codecov.io/github/nickwph/publish-gradle/coverage.svg?branch=master)](https://codecov.io/github/nickwph/publish-gradle?branch=master)
+[![Circle CI](https://img.shields.io/circleci/project/nickwph/publish-gradle.svg)]
+(https://circleci.com/gh/nickwph/publish-gradle)
+[![codecov.io](https://img.shields.io/codecov/c/github/nickwph/publish-gradle.svg)]
+(https://codecov.io/github/nickwph/publish-gradle)
+[ ![Download](https://img.shields.io/bintray/v/nickwph/maven/publish-gradle.svg)]
+(https://bintray.com/nickwph/maven/publish-gradle/_latestVersion)
 
 ## Recommended Usage
 
 ``` groovy
+buildscript {
+    dependencies {
+        classpath 'com.nicholasworkshop:gradle-artifactid:1.0.0'
+        classpath 'com.nicholasworkshop:gradle-publish:1.0.0'
+    }
+}
+
 apply plugin: 'com.nicholasworkshop.artifactid'
 apply plugin: 'com.nicholasworkshop.publish'
 
@@ -18,7 +28,7 @@ publish {
     projectUrl 'projectUrl'
     developerId 'johndoe'
     developerName 'John Doe'
-    licenses 'mit', 'apache-2.0' // https://developer.github.com/v3/licenses/#list-all-licenses
+    licenses 'mit', 'apache-2.0' // https://developer.github.com/v3/licenses
     mavenTargets {
         bintray; sonatype
     }
@@ -112,27 +122,33 @@ signing.secretKeyRingFile=<PATH>/.gnupg/secring.gpg
 ## Advanced Usage
 
 ``` groovy
+buildscript {
+    dependencies {
+        classpath 'com.nicholasworkshop:gradle-publish:1.0.0'
+    }
+}
+
 apply plugin: 'com.nicholasworkshop.publish'
 
 publish {
     // basicInfo
-    id 'id'             
-    group 'group'
-    version 'version'
+    id 'id'           // project.ext.artifactId will be used if null
+    group 'group'     // project.group will be used if null
+    version 'version' // project.version will be used if null
     // project
     projectName 'projectName'
     projectUrl 'projectUrl'
     projectDescription 'projectDescription'
     projectPackaging 'projectPackaging'
     // scm
-    scmUrl 'scmUrl'
+    scmUrl 'scmUrl' // projectUrl will be used if null
     scmConnection 'scmConnection'
     scmDeveloperConnection 'scmDeveloperConnection'
     // developer
     developerId 'developerId'
     developerName 'developerName'
     // license
-    licenses 'mit', 'apache-2.0'
+    licenses 'mit', 'apache-2.0' // https://developer.github.com/v3/licenses
     // signing
     signing true
     // mavens
