@@ -1,7 +1,7 @@
 package com.nicholasworkshop.publish
 
 import org.gradle.api.Project
-import org.gradle.api.artifacts.PublishException
+import org.gradle.api.tasks.TaskExecutionException
 import org.gradle.api.tasks.Upload
 import org.testng.annotations.Test
 
@@ -14,6 +14,35 @@ public class PublishPluginTest {
 
     @Test
     public void testApply() throws Exception {
+        Project project = ProjectUtils.createJavaProject()
+        project.apply(plugin: 'com.nicholasworkshop.publish')
+        project.publish {
+            id 'id'
+            group 'group'
+            version 'version'
+            projectName 'projectName'
+            projectUrl 'projectUrl'
+            projectDescription 'projectDescription'
+            projectPackaging 'projectPackaging'
+            scmUrl 'scmUrl'
+            scmConnection 'scmConnection'
+            scmDeveloperConnection 'scmDeveloperConnection'
+            developerId 'developerId'
+            developerName 'developerName'
+            licenses 'mit', 'apache-2.0'
+            mavenTargets {
+                sonatype; bintray
+            }
+        }
+        project.evaluate()
+        // verify
+        assertTrue project.tasks.getNames().contains("publishSonatype")
+        assertNotNull project.tasks.getByName("publishSonatype")
+        assertNotNull project.tasks.getByName("publishBintray")
+    }
+
+    @Test
+    public void testApply_mavenDetails() throws Exception {
         Project project = ProjectUtils.createJavaProject()
         project.apply(plugin: 'com.nicholasworkshop.publish')
         project.publish {
@@ -50,7 +79,7 @@ public class PublishPluginTest {
         assertEquals upload.repositories.mavenDeployer.pom.model.licenses.size(), 2
     }
 
-    @Test(expectedExceptions = PublishException)
+    @Test(expectedExceptions = TaskExecutionException)
     public void testExecute() throws Exception {
         Project project = ProjectUtils.createJavaProject()
         project.apply(plugin: 'com.nicholasworkshop.publish')
@@ -70,7 +99,6 @@ public class PublishPluginTest {
         project.evaluate()
         // verify
         assertTrue project.tasks.getNames().contains("publishSonatype")
-        Upload upload = project.tasks.getByName("publishSonatype") as Upload
-        upload.execute()
+        project.tasks.getByName("publishSonatype").execute()
     }
 }

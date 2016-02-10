@@ -16,7 +16,6 @@ class ProjectUtils {
         return project
     }
 
-
     static Project createAndroidApplicaitonProject() {
         DefaultProject project = ProjectBuilder.builder().build() as DefaultProject
         linkAndroidSdkDir(project)

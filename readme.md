@@ -20,11 +20,61 @@ publish {
     developerName 'John Doe'
     licenses 'mit', 'apache-2.0' // https://developer.github.com/v3/licenses/#list-all-licenses
     mavenTargets {
-        bintray {
-            username 'username'
-            password 'password'
-        }
+        bintray; sonatype
     }
+}
+```
+
+Put your username & password in <code>gradle.properties</code> and keep them ignored.
+
+```properties
+publish.maven.bintray.username=<USERNAME>
+publish.maven.bintray.password=<API_KEY> // little reminder: bintray use apiKey as password
+publish.maven.sonatype.username=<USERNAME>
+publish.maven.sonatype.password=<PASSWORD>
+```
+
+
+## Pre-set Repository Info
+
+There are some pre-defined maven targets with following info. They will be automatically applied if the specific target names are used.
+
+| Target   | Id                       | Repository URL                                                           | Snapshot Repository URL                                   |
+| -------  | ------------------------ | ------------------------------------------------------------------------ | --------------------------------------------------------- |
+| bintray  | bintray-<code>\<USERNAME\></code>-maven | https://api.bintray.com/maven/nickwph/maven/artifactid-gradle/;publish=1 | https://oss.jfrog.org/artifactory/list/oss-snapshot-local |
+| jcenter  | bintray-<code>\<USERNAME\></code>-maven | https://api.bintray.com/maven/nickwph/maven/artifactid-gradle/;publish=1 | https://oss.jfrog.org/artifactory/list/oss-snapshot-local |
+| sonatype |                          | https://oss.sonatype.org/service/local/staging/deploy/maven2             | https://oss.sonatype.org/content/repositories/snapshots   |
+
+## Repository Username & Password
+
+You can either put your maven information in your gradle.properties or <code>build.gradle</code> (not recommended).
+
+### Create gradle.properties file
+
+```properties
+publish.maven.<TARGET_NAME>.id=<ID>
+publish.maven.<TARGET_NAME>.url=<URL>
+publish.maven.<TARGET_NAME>.username=<USERNAME>
+publish.maven.<TARGET_NAME>.password=<PASSWORD>
+publish.maven.<TARGET_NAME>.snapshotId=<SNAPSHOT_ID>
+publish.maven.<TARGET_NAME>.snapshotUrl=<SNAPSHOT_URL>
+publish.maven.<TARGET_NAME>.snapshotUsername=<SNAPSHOT_USERNAME>
+publish.maven.<TARGET_NAME>.snapshotPassword=<SNAPSHOT_PASSWORD>
+
+```
+
+### In gradle.build
+
+```
+sonatype {
+    url 'releaseUrl'
+    id 'id'
+    username 'username'
+    password 'password'
+    snapshotUrl 'snapshotUrl'
+    snapshotId 'id'
+    snapshotUsername 'username'
+    snapshotPassword 'password'
 }
 ```
 

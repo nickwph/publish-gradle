@@ -55,7 +55,6 @@ class PreferencesExtension {
     }
 
     void validate() {
-        System.out.println licenses
         if (id == null && project.hasProperty('artifactId')) {
             id = project.property('artifactId')
         }

@@ -1,5 +1,7 @@
 package com.nicholasworkshop.publish
 
+import org.gradle.api.Project
+
 import static java.lang.String.format
 
 /**
@@ -70,7 +72,20 @@ class MavenTarget {
         this.snapshotPassword = password
     }
 
-    void validate() {
+    void validate(Project project) {
+        String prefix = "publish.maven.$name"
+        if (id == null && project.hasProperty("${prefix}.id")) {
+            id = project.property("${prefix}.id")
+        }
+        if (url == null && project.hasProperty("${prefix}.url")) {
+            url = project.property("${prefix}.url")
+        }
+        if (username == null && project.hasProperty("${prefix}.username")) {
+            username = project.property("${prefix}.username")
+        }
+        if (password == null && project.hasProperty("${prefix}.password")) {
+            password = project.property("${prefix}.password")
+        }
         if (snapshotId == null && id != null) {
             snapshotId = id
         }
@@ -82,6 +97,18 @@ class MavenTarget {
         }
         if (snapshotPassword == null && password != null) {
             snapshotPassword = password
+        }
+        if (snapshotId == null && project.hasProperty("${prefix}.snapshotId")) {
+            snapshotId = project.property("${prefix}.snapshotId")
+        }
+        if (snapshotUrl == null && project.hasProperty("${prefix}.snapshotUrl")) {
+            snapshotUrl = project.property("${prefix}.snapshotUrl")
+        }
+        if (snapshotUsername == null && project.hasProperty("${prefix}.snapshotUsername")) {
+            snapshotUsername = project.property("${prefix}.snapshotUsername")
+        }
+        if (snapshotPassword == null && project.hasProperty("${prefix}.snapshotPassword")) {
+            snapshotPassword = project.property("${prefix}.snapshotPassword")
         }
         if (name.equalsIgnoreCase(BINTRAY_NAME) || name.equalsIgnoreCase(BINTRAY_NAME_2)) {
             if (id == null && username != null) {
