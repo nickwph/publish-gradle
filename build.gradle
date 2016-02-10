@@ -4,7 +4,7 @@ apply plugin: 'jacoco'
 apply plugin: 'signing'
 
 group 'com.nicholasworkshop'
-version '1.0.0-SNAPSHOT'
+version '1.0.0'
 
 repositories {
     jcenter()
@@ -54,62 +54,8 @@ signing {
     sign configurations.archives
 }
 
-task publishSonatype(type: Upload) {
+uploadArchives {
     group 'publish'
-    uploadDescriptor = true
-    configuration = configurations.archives
-    repositories {
-        mavenDeployer {
-            pom.groupId = project.group
-            pom.artifactId = project.install.repositories.mavenInstaller.pom.artifactId
-            pom.version = project.version
-            pom.project {
-                name 'Publish Gradle Plugin'
-                packaging 'jar'
-                description 'N/A'
-                url 'https://github.com/nickwph/publish-gradle'
-                scm {
-                    url 'https://github.com/nickwph/publish-gradle'
-                    connection 'scm:git@github.com:nickwph/publish-gradle.git'
-                    developerConnection 'scm:git@github.com:nickwph/publish-gradle.git'
-                }
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution 'repo'
-                    }
-                }
-                developers {
-                    developer {
-                        id 'nickwph'
-                        name 'Nicholas Wong'
-                    }
-                }
-            }
-            beforeDeployment { MavenDeployment deployment ->
-                project.signing.signPom(deployment)
-            }
-            def url;
-            if (!project.version.endsWith('SNAPSHOT')) {
-                url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-            } else {
-                url = 'https://oss.sonatype.org/content/repositories/snapshots/'
-            }
-            String username = getGradleProperty('publish.maven.sonatype.username');
-            String password = getGradleProperty('publish.maven.sonatype.password')
-            repository(url: url) {
-                authentication(userName: username, password: password)
-            }
-        }
-    }
-}
-
-
-task publishBintray(type: Upload) {
-    group 'publish'
-    uploadDescriptor = true
-    configuration = configurations.archives
     repositories {
         mavenDeployer {
             pom.groupId = project.group
@@ -158,6 +104,6 @@ task publishBintray(type: Upload) {
     }
 }
 
-String getGradleProperty(String name) {
+def getGradleProperty(String name) {
     return hasProperty(name) ? getProperty(name) : ""
 }
