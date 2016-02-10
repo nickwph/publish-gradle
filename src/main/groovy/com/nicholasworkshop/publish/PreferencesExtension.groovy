@@ -1,6 +1,5 @@
 package com.nicholasworkshop.publish
 
-import org.apache.maven.model.License
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
@@ -10,8 +9,9 @@ import org.gradle.api.Project
  */
 class PreferencesExtension {
 
-    private Project project
-    private NamedDomainObjectContainer<MavenTarget> mavenTargets;
+    private final Project project
+    private final List<License> licenses = new ArrayList<>()
+    private final NamedDomainObjectContainer<MavenTarget> mavenTargets
 
     String id
     String group
@@ -25,7 +25,6 @@ class PreferencesExtension {
     String scmDeveloperConnection
     String developerId
     String developerName
-    License license
     boolean signing
 
     PreferencesExtension(Project project) {
@@ -44,8 +43,19 @@ class PreferencesExtension {
     void mavenTargets(Closure<NamedDomainObjectContainer<MavenTarget>> closure) {
         mavenTargets.configure(closure)
     }
+    
+    List<License> getLicenses() {
+        return licenses
+    }
+
+    void licenses(String[] names) {
+        for (String name : names) {
+            licenses.add(new License(name))
+        }
+    }
 
     void validate() {
+        System.out.println licenses
         if (id == null && project.hasProperty('artifactId')) {
             id = project.property('artifactId')
         }

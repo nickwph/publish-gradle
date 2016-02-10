@@ -1,18 +1,16 @@
 package com.nicholasworkshop.publish
 
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.tasks.Upload
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
-
 /**
  * Created by nickwph on 2/7/16.
  */
 public class PublishPluginTest {
 
-    @Test(expectedExceptions = GradleException)
+    @Test
     public void testApply() throws Exception {
         Project project = ProjectUtils.createJavaProject()
         project.apply(plugin: 'com.nicholasworkshop.publish')
@@ -31,6 +29,7 @@ public class PublishPluginTest {
             developerId 'developerId'
             developerName 'developerName'
             signing false
+            licenses 'mit', 'apache-2.0'
             mavenTargets {
                 sonatype {
                     url 'releaseUrl'
@@ -48,6 +47,7 @@ public class PublishPluginTest {
         assertEquals upload.repositories.mavenDeployer.repository.url, 'releaseUrl'
         assertEquals upload.repositories.mavenDeployer.repository.authentication.userName, 'username'
         assertEquals upload.repositories.mavenDeployer.repository.authentication.password, 'password'
+        assertEquals upload.repositories.mavenDeployer.pom.model.licenses.size(), 2
         upload.execute()
     }
 }

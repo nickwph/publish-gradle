@@ -46,7 +46,8 @@ task jarJavadoc(type: Jar) {
 }
 
 artifacts {
-    archives jarSources, jarJavadoc
+    archives jarSources
+    archives jarJavadoc
 }
 
 signing {

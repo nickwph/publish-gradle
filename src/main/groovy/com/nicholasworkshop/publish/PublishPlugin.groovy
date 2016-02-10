@@ -6,6 +6,7 @@ import org.gradle.api.artifacts.maven.MavenDeployment
 import org.gradle.api.plugins.PluginContainer
 import org.gradle.api.tasks.Upload
 import org.gradle.api.tasks.bundling.Jar
+
 /**
  * Created by nickwph on 2/7/16.
  */
@@ -86,10 +87,12 @@ public class PublishPlugin implements Plugin<Project> {
                     developerConnection preferences.scmDeveloperConnection
                 }
                 licenses {
-                    license {
-//                        name preferences.license.name
-//                        url preferences.license.url
-//                        distribution preferences.license.distribution
+                    for (License lic in preferences.licenses) {
+                        license {
+                            name lic.name
+                            url lic.url
+                            distribution '?'
+                        }
                     }
                 }
                 developers {
