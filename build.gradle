@@ -27,7 +27,7 @@ jacocoTestReport {
 install {
     group 'publish'
     repositories.mavenInstaller {
-        pom.artifactId = "gradle-maven"
+        pom.artifactId = "gradle-publish"
     }
 }
 
@@ -90,7 +90,7 @@ uploadArchives {
             }
             def url;
             if (!project.version.endsWith('SNAPSHOT')) {
-                url = 'https://api.bintray.com/maven/nickwph/maven/artifactid-gradle/;publish=1'
+                url = 'https://api.bintray.com/maven/nickwph/maven/publish-gradle/;publish=1'
             } else {
                 url = 'https://oss.jfrog.org/artifactory/list/oss-snapshot-local'
             }
