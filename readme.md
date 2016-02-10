@@ -18,7 +18,7 @@ publish {
     projectUrl 'projectUrl'
     developerId 'johndoe'
     developerName 'John Doe'
-    licenses 'mit', 'apache-2.0'
+    licenses 'mit', 'apache-2.0' // https://developer.github.com/v3/licenses/#list-all-licenses
     mavenTargets {
         bintray {
             username 'username'
@@ -27,6 +27,19 @@ publish {
     }
 }
 ```
+
+## Tasks Generated
+
+| install                  |
+| -------------------------|
+| publish<MavenTargetName> |
+| publishBintray           |
+| publishSonatype          |
+
+## Project Licenses
+
+Please use keys defined by Github<br/>
+https://developer.github.com/v3/licenses/#list-all-licenses
 
 ## Advanced Usage
 
