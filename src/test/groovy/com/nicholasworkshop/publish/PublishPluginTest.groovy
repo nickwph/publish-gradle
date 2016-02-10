@@ -1,10 +1,12 @@
 package com.nicholasworkshop.publish
 
 import org.gradle.api.Project
+import org.gradle.api.artifacts.PublishException
 import org.gradle.api.tasks.Upload
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
+
 /**
  * Created by nickwph on 2/7/16.
  */
@@ -14,7 +16,6 @@ public class PublishPluginTest {
     public void testApply() throws Exception {
         Project project = ProjectUtils.createJavaProject()
         project.apply(plugin: 'com.nicholasworkshop.publish')
-        project.ext.artifactId = 'id'
         project.publish {
             id 'id'
             group 'group'
@@ -48,6 +49,30 @@ public class PublishPluginTest {
         assertEquals upload.repositories.mavenDeployer.repository.authentication.userName, 'username'
         assertEquals upload.repositories.mavenDeployer.repository.authentication.password, 'password'
         assertEquals upload.repositories.mavenDeployer.pom.model.licenses.size(), 2
+    }
+
+    @Test(expectedExceptions = PublishException)
+    public void testExecute() throws Exception {
+        Project project = ProjectUtils.createJavaProject()
+        project.apply(plugin: 'com.nicholasworkshop.publish')
+        project.publish {
+            id 'id'
+            group 'group'
+            version 'version'
+            signing false
+            mavenTargets {
+                sonatype {
+                    url 'releaseUrl'
+                    snapshotUrl 'snapshotUrl'
+                    username 'username'
+                    password 'password'
+                }
+            }
+        }
+        project.evaluate()
+        // verify
+        assertTrue project.tasks.getNames().contains("publishSonatype")
+        Upload upload = project.tasks.getByName("publishSonatype") as Upload
         upload.execute()
     }
 }
