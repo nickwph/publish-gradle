@@ -55,23 +55,26 @@ class PreferencesExtension {
     }
 
     void validate() {
-        if (id == null && project.hasProperty('artifactId')) {
-            id = project.property('artifactId')
-        }
-        if (group == null && project.group != null) {
-            group = project.group
-        }
-        if (version == null && project.version != null) {
-            version = project.version
-        }
-        if (scmUrl == null && projectUrl != null) {
-            scmUrl = projectUrl
-        }
-        if (scmDeveloperConnection == null && scmConnection != null) {
-            scmDeveloperConnection = scmConnection
-        }
-        mavenTargets.each { MavenTarget mavenTarget ->
-            mavenTarget.validate()
+        if (id == null && project.hasProperty('artifactId')) id = project.property('artifactId')
+        if (group == null && project.group != null) group = project.group
+        if (version == null && project.version != null) version = project.version
+        if (scmUrl == null && projectUrl != null) scmUrl = projectUrl
+        if (scmDeveloperConnection == null && scmConnection != null) scmDeveloperConnection = scmConnection
+
+        // check empties
+        String message = ''
+        if (id == null) message += 'id '
+        if (group == null) message += 'group '
+        if (version == null) message += 'version '
+        if (projectName == null) message += 'projectName '
+        if (projectUrl == null) message += 'projectUrl '
+        if (developerId == null) message += 'developerId '
+        if (developerName == null) message += 'developerName '
+        if (!message.isEmpty()) System.err.println "[WARNING] There are missing project info: $message"
+
+        // validate targets
+        for (MavenTarget mavenTarget in mavenTargets) {
+            mavenTarget.validate(project)
         }
     }
 }

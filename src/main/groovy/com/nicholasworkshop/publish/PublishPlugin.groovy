@@ -28,11 +28,12 @@ public class PublishPlugin implements Plugin<Project> {
         if (!container.hasPlugin('signing')) container.apply('signing')
 
         project.afterEvaluate {
+            preferences.validate()
             configureCommonTasks()
             configureInstallTask()
-            preferences.validate()
             preferences.mavenTargets.each { MavenTarget target ->
-                configureMavenTargetTask(target)
+                configureMavenTargetTask(target, true)
+                configureMavenTargetTask(target, false)
             }
         }
     }
@@ -65,9 +66,9 @@ public class PublishPlugin implements Plugin<Project> {
         return upload
     }
 
-    private Upload configureMavenTargetTask(MavenTarget target) {
+    private Upload configureMavenTargetTask(MavenTarget target, boolean isSnapshot) {
         String targetName = target.name.capitalize()
-        String taskName = "publish${targetName}"
+        String taskName = "publish${targetName}${isSnapshot ? 'Snapshot' : ''}"
         Upload upload = project.tasks.create(taskName, Upload)
         upload.group = TASK_GROUP
         upload.uploadDescriptor = true
@@ -75,7 +76,7 @@ public class PublishPlugin implements Plugin<Project> {
         upload.repositories.mavenDeployer {
             pom.groupId = preferences.group
             pom.artifactId = preferences.id
-            pom.version = preferences.version
+            pom.version = "${preferences.version}${isSnapshot ? '-SNAPSHOT' : ''}"
             pom.project {
                 url = preferences.projectUrl
                 name = preferences.projectName
@@ -107,10 +108,13 @@ public class PublishPlugin implements Plugin<Project> {
 
             }
         }
-        String url = !preferences.version.endsWith('SNAPSHOT') ? target.url : target.snapshotUrl
+        String id = !isSnapshot ? target.id : target.snapshotId
+        String url = !isSnapshot ? target.url : target.snapshotUrl
+        String username = !isSnapshot ? target.username : target.snapshotUsername
+        String password = !isSnapshot ? target.password : target.snapshotPassword
         if (url != null) {
-            upload.repositories.mavenDeployer.repository(url: url) {
-                authentication(userName: target.username, password: target.password)
+            upload.repositories.mavenDeployer.repository(id: id, url: url) {
+                authentication(userName: username, password: password)
             }
         }
         return upload
