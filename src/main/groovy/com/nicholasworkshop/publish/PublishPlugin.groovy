@@ -1,5 +1,7 @@
 package com.nicholasworkshop.publish
 
+import groovy.swing.SwingBuilder
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.maven.MavenDeployment
@@ -104,8 +106,13 @@ public class PublishPlugin implements Plugin<Project> {
                 }
             }
             beforeDeployment { MavenDeployment deployment ->
-                project.signing.signPom(deployment)
-
+                if (preferences.signing) {
+                    project.signing.signPom(deployment)
+                }
+                if (!isSnapshot && preferences.releaseConfirm) {
+                    String answer = prompt '> Sure to deploy as release? (yes/no)'
+                    if (!'yes'.equalsIgnoreCase(answer)) throw new GradleException('Publish canceled')
+                }
             }
         }
         String id = !isSnapshot ? target.id : target.snapshotId
@@ -118,5 +125,30 @@ public class PublishPlugin implements Plugin<Project> {
             }
         }
         return upload
+    }
+
+    private static String prompt(String question) {
+        def console = System.console()
+        if (console == null) {
+            String answer = ''
+            new SwingBuilder().edt {
+                dialog(modal: true, title: 'Confirmation', alwaysOnTop: true, resizable: false, locationRelativeTo: null, pack: true, show: true) {
+                    vbox {
+                        label(text: question)
+                        button(text: 'OK', actionPerformed: {
+                            dispose();
+                            answer = 'yes'
+                        })
+                        button(defaultButton: true, text: 'Cancel', actionPerformed: {
+                            dispose();
+                            answer = 'no'
+                        })
+                    }
+                }
+            }
+            return answer
+        } else {
+            return console.readLine('> Sure to deploy as release? (yes/no)')
+        }
     }
 }

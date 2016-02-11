@@ -26,6 +26,7 @@ class PreferencesExtension {
     String developerId
     String developerName
     boolean signing = false
+    boolean releaseConfirm = true
 
     PreferencesExtension(Project project) {
         this.project = project
