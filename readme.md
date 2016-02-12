@@ -44,7 +44,6 @@ publish.maven.sonatype.username=<USERNAME>
 publish.maven.sonatype.password=<PASSWORD>
 ```
 
-
 ## Pre-set Repository Info
 
 There are some pre-defined maven targets with following info. They will be automatically applied if the specific target names are used.
@@ -76,15 +75,36 @@ publish.maven.<TARGET_NAME>.snapshotPassword=<SNAPSHOT_PASSWORD>
 ### In gradle.build
 
 ```
-sonatype {
-    url 'releaseUrl'
-    id 'id'
-    username 'username'
-    password 'password'
-    snapshotUrl 'snapshotUrl'
-    snapshotId 'id'
-    snapshotUsername 'username'
-    snapshotPassword 'password'
+publish {
+    mavenTargets {
+        sonatype {
+            url 'releaseUrl'
+            id 'id'
+            username 'username'
+            password 'password'
+            snapshotUrl 'snapshotUrl'
+            snapshotId 'id'
+            snapshotUsername 'username'
+            snapshotPassword 'password'
+        }
+    }
+}
+```
+
+# Release Confirmation
+
+By default your will be asked to confirm (in terminal or a dialog) when you want to 
+publish release build, this is a precaution for any unintended release.
+
+```
+> Sure to deploy as release? (yes/no)
+```
+
+You can turn it off by adding this in the option.
+
+```
+publish {
+    releaseConfirm false
 }
 ```
 
