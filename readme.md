@@ -90,11 +90,11 @@ sonatype {
 
 ## Tasks Generated
 
-| install                  |
-| -------------------------|
-| publish<MavenTargetName> |
-| publishBintray           |
-| publishSonatype          |
+| Task                                  | Description                                       |
+| ------------------------------------- | ------------------------------------------------- |
+| install                               | Install the project archive into local maven      |
+| publish<code>\<MavenTargetName\></code><br/>  publishBintray<br/> publishSonatype                       | Publish to the maven target defined, and will not  generate if <code>-SNAPSHOT</code> is already in  <code>version</code>                              |
+| publish<code>\<MavenTargetName\></code>Snapshot<br/> publishBintraySnapshot<br/> publishSonatypeSnapshot               | Publish to the maven snapshot target defined      |
 
 ## Project Licenses
 
