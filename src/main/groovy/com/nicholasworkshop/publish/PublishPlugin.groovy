@@ -35,7 +35,10 @@ public class PublishPlugin implements Plugin<Project> {
             configureInstallTask()
             preferences.mavenTargets.each { MavenTarget target ->
                 configureMavenTargetTask(target, true)
-                configureMavenTargetTask(target, false)
+                if (!preferences.version.endsWith('-SNAPSHOT')) {
+                    // generate release task only if it is not snapshot already
+                    configureMavenTargetTask(target, false)
+                }
             }
         }
     }
@@ -78,7 +81,7 @@ public class PublishPlugin implements Plugin<Project> {
         upload.repositories.mavenDeployer {
             pom.groupId = preferences.group
             pom.artifactId = preferences.id
-            pom.version = "${preferences.version}${isSnapshot ? '-SNAPSHOT' : ''}"
+            pom.version = "${preferences.version}${isSnapshot && !preferences.version.endsWith('-SNAPSHOT') ? '-SNAPSHOT' : ''}"
             pom.project {
                 url = preferences.projectUrl
                 name = preferences.projectName
