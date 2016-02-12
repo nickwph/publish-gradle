@@ -41,10 +41,11 @@ publish {
 Put your username & password in <code>gradle.properties</code> and keep them ignored.
 
 ```properties
-publish.maven.bintray.username=<USERNAME>
-publish.maven.bintray.password=<API_KEY> // little reminder: bintray use apiKey as password
 publish.maven.sonatype.username=<USERNAME>
 publish.maven.sonatype.password=<PASSWORD>
+publish.maven.bintray.username=<USERNAME>
+publish.maven.bintray.password=<API_KEY>         // bintray use apiKey as password
+publish.maven.bintray.packageName=<PACKAGE_NAME> // bintray maven requires package name (see your bintray dashboard)
 ```
 
 ## Pre-set Repository Info
