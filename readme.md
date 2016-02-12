@@ -10,6 +10,9 @@
 
 ``` groovy
 buildscript {
+    repositories {
+        jcenter()
+    }
     dependencies {
         classpath 'com.nicholasworkshop:gradle-artifactid:1.0.0'
         classpath 'com.nicholasworkshop:gradle-publish:1.0.0'
