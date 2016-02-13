@@ -84,7 +84,7 @@ class MavenTarget {
         this.snapshotPassword = password
     }
 
-    void validate(Project project) {
+    void validate(Project project, PreferencesExtension extension) {
         String prefix = "publish.maven.$name"
 
         // release
@@ -94,7 +94,14 @@ class MavenTarget {
         if (username == null && project.hasProperty("${prefix}.username")) username = project.property("${prefix}.username")
         if (password == null && project.hasProperty("${prefix}.password")) password = project.property("${prefix}.password")
         if (BINTRAY_NAME.equalsIgnoreCase(name) || BINTRAY_NAME_2.equalsIgnoreCase(name)) {
-            if (id == null && username != null) id = format BINTRAY_ID, username
+            if (id == null && username != null) {
+                id = format BINTRAY_ID, username
+                System.out.println "Repository id for target $name is not set, using $id"
+            }
+            if (packageName == null && extension.id != null) {
+                packageName = extension.id
+                System.out.println "Repository package name for target $name is not set, using $packageName"
+            }
             if (BINTRAY_RELEASE_URL.equalsIgnoreCase(url)) url = format BINTRAY_RELEASE_URL, username, packageName
         }
 

@@ -75,7 +75,7 @@ class PreferencesExtension {
 
         // validate targets
         for (MavenTarget mavenTarget in mavenTargets) {
-            mavenTarget.validate(project)
+            mavenTarget.validate(project, this)
         }
     }
 }
