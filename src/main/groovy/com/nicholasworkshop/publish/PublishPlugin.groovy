@@ -8,6 +8,9 @@ import org.gradle.api.artifacts.maven.MavenDeployment
 import org.gradle.api.plugins.PluginContainer
 import org.gradle.api.tasks.Upload
 import org.gradle.api.tasks.bundling.Jar
+import org.gradle.api.tasks.javadoc.Javadoc
+
+import static java.io.File.pathSeparator
 
 /**
  * Created by nickwph on 2/7/16.
@@ -31,7 +34,12 @@ public class PublishPlugin implements Plugin<Project> {
 
         project.afterEvaluate {
             preferences.validate()
-            configureCommonTasks()
+            configureSigningTask()
+            if (container.hasPlugin('com.android.application') || container.hasPlugin('com.android.library')) {
+                configureAndroidCommonTasks()
+            } else {
+                configureCommonTasks()
+            }
             configureInstallTask()
             preferences.mavenTargets.each { MavenTarget target ->
                 configureMavenTargetTask(target, true)
@@ -43,27 +51,60 @@ public class PublishPlugin implements Plugin<Project> {
         }
     }
 
+    private void configureSigningTask() {
+        project.signing {
+            required = preferences.signing
+            sign project.configurations.archives
+        }
+    }
+
     private void configureCommonTasks() {
         Jar javadoc = project.tasks.create("jarJavadoc", Jar)
         javadoc.group = 'build'
         javadoc.classifier = 'javadoc'
         javadoc.from project.javadoc
+
         Jar sources = project.tasks.create("jarSources", Jar)
         sources.group = 'build'
         sources.classifier = 'sources'
         sources.from project.sourceSets.main.allSource
-        project.artifacts {
-            archives sources, javadoc
-        }
-        project.signing {
-            required = preferences.signing
-            sign project.configurations.archives
-        }
 
+        project.artifacts {
+            archives sources
+            archives javadoc
+        }
+    }
+
+    private void configureAndroidCommonTasks() {
+        Javadoc javadocAndroid = project.tasks.create('javadocAndroid', Javadoc)
+        javadocAndroid.group = 'build'
+        javadocAndroid.source = project.android.sourceSets.main.java.srcDirs
+        javadocAndroid.classpath += project.files(project.android.bootClasspath.join(pathSeparator))
+
+        Jar javadoc = project.tasks.create("jarJavadoc", Jar)
+        javadoc.dependsOn javadocAndroid
+        javadoc.group = 'build'
+        javadoc.classifier = 'javadoc'
+        javadoc.from javadocAndroid.destinationDir
+
+        Jar sources = project.tasks.create("jarSources", Jar)
+        sources.group = 'build'
+        sources.classifier = 'sources'
+        sources.from project.android.sourceSets.main.java.sourceFiles
+
+        project.artifacts {
+            archives sources
+            archives javadoc
+        }
     }
 
     private Upload configureInstallTask() {
-        Upload upload = project.tasks.getByName("install") as Upload
+        Upload upload = project.tasks.findByName("install") as Upload
+        if (upload == null) {
+            upload = project.tasks.create('install', Upload)
+            upload.uploadDescriptor = true
+            upload.configuration = project.configurations.archives
+        }
         upload.group = TASK_GROUP
         upload.repositories.mavenInstaller {
             pom.artifactId = preferences.id
@@ -74,6 +115,7 @@ public class PublishPlugin implements Plugin<Project> {
     private Upload configureMavenTargetTask(MavenTarget target, boolean isSnapshot) {
         String targetName = target.name.capitalize()
         String taskName = "publish${targetName}${isSnapshot ? 'Snapshot' : ''}"
+
         Upload upload = project.tasks.create(taskName, Upload)
         upload.group = TASK_GROUP
         upload.uploadDescriptor = true
@@ -118,6 +160,7 @@ public class PublishPlugin implements Plugin<Project> {
                 }
             }
         }
+
         String id = !isSnapshot ? target.id : target.snapshotId
         String url = !isSnapshot ? target.url : target.snapshotUrl
         String username = !isSnapshot ? target.username : target.snapshotUsername
