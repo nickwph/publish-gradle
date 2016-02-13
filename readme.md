@@ -31,7 +31,7 @@ publish {
     projectUrl 'projectUrl'
     developerId 'johndoe'
     developerName 'John Doe'
-    licenses 'mit', 'apache-2.0' // https://developer.github.com/v3/licenses
+    licenses 'mit', 'apache-2.0' // see https://developer.github.com/v3/licenses
     mavenTargets {
         bintray; sonatype
     }
@@ -54,8 +54,8 @@ There are some pre-defined maven targets with following info. They will be autom
 
 | Target   | Id                       | Repository URL                                                           | Snapshot Repository URL                                   |
 | -------  | ------------------------ | ------------------------------------------------------------------------ | --------------------------------------------------------- |
-| bintray  | bintray-<code>\<USERNAME\></code>-maven | https://api.bintray.com/maven/nickwph/maven/artifactid-gradle/;publish=1 | https://oss.jfrog.org/artifactory/list/oss-snapshot-local |
-| jcenter  | bintray-<code>\<USERNAME\></code>-maven | https://api.bintray.com/maven/nickwph/maven/artifactid-gradle/;publish=1 | https://oss.jfrog.org/artifactory/list/oss-snapshot-local |
+| bintray<br/>jcenter  | bintray-<code>\<USERNAME\></code>-maven | https://api.bintray.com/maven/<code>\<USERNAME\></code>/maven/<code>\<PACKAGE_NAME\></code> | https://oss.jfrog.org/artifactory/list/oss-snapshot-local |
+| jfrog    | bintray-<code>\<USERNAME\></code>-maven | https://oss.jfrog.org/artifactory/list/oss-release-local | https://oss.jfrog.org/artifactory/list/oss-snapshot-local |
 | sonatype |                          | https://oss.sonatype.org/service/local/staging/deploy/maven2             | https://oss.sonatype.org/content/repositories/snapshots   |
 
 ## Repository Username & Password
@@ -95,7 +95,7 @@ publish {
 }
 ```
 
-# Release Confirmation
+## Release Confirmation
 
 By default your will be asked to confirm (in terminal or a dialog) when you want to 
 publish release build, this is a precaution for any unintended release.
@@ -147,6 +147,9 @@ signing.secretKeyRingFile=<PATH>/.gnupg/secring.gpg
 
 ``` groovy
 buildscript {
+    repositories {
+        jcenter()
+    }
     dependencies {
         classpath 'com.nicholasworkshop:gradle-publish:1.0.0'
     }
@@ -155,67 +158,79 @@ buildscript {
 apply plugin: 'com.nicholasworkshop.publish'
 
 publish {
+    
     // basicInfo
-    id 'id'           // project.ext.artifactId will be used if null
-    group 'group'     // project.group will be used if null
-    version 'version' // project.version will be used if null
+    id      'id'           // project.ext.artifactId will be used if null
+    group   'group'        // project.group will be used if null
+    version 'version'      // project.version will be used if null
+    
     // project
-    projectName 'projectName'
-    projectUrl 'projectUrl'
+    projectName        'projectName'
+    projectUrl         'projectUrl'
     projectDescription 'projectDescription'
-    projectPackaging 'projectPackaging'
+    projectPackaging   'projectPackaging'
+    
     // scm
-    scmUrl 'scmUrl' // projectUrl will be used if null
-    scmConnection 'scmConnection'
+    scmUrl                 'scmUrl'                 // projectUrl will be used if null
+    scmConnection          'scmConnection'
     scmDeveloperConnection 'scmDeveloperConnection'
+    
     // developer
-    developerId 'developerId'
+    developerId   'developerId'
     developerName 'developerName'
-    // license
-    licenses 'mit', 'apache-2.0' // https://developer.github.com/v3/licenses
-    // signing
-    signing true
+    
+    // licenses, see https://developer.github.com/v3/licenses
+    licenses 'mit', 'apache-2.0'
+    
+    // other options
+    signing true           // default false
+    releaseConfirm false   // default true
+    
     // mavens
     mavenTargets {
         sonatype {
-            url 'releaseUrl'
-            id 'id'
-            username 'username'
-            password 'password'
-            snapshotUrl 'snapshotUrl'
-            snapshotId 'id'
-            snapshotUsername 'username'
-            snapshotPassword 'password'
+            url                 'releaseUrl'
+            username            'username'
+            password            'password'
+            snapshotUrl         'snapshotUrl' // url will be used if null
+            snapshotUsername    'username'    // username will be used if nul
+            snapshotPassword    'password'    // password will be used if nul
         }
-        bintray {
-            url 'releaseUrl'
-            id 'id'
-            username 'username'
-            password 'password'
-            snapshotUrl 'snapshotUrl'
-            snapshotId 'id'
-            snapshotUsername 'username'
-            snapshotPassword 'password'
+        bintray {                             // any null info will be replaced by publish.maven.bintray.* from gradle.properties
+            url                 'releaseUrl'
+            id                  'id'          // "bintray-$username-maven" will be used if null
+            packageName         'package'     // project.id will be used if null (since v1.0.1)
+            username            'username'
+            password            'password'
+            snapshotUrl         'snapshotUrl' // url will be used if null
+            snapshotId          'id'          // id will be used if null
+            snapshotPackageName 'package'     // packageName will be used if null
+            snapshotUsername    'username'    // username will be used if nul
+            snapshotPassword    'password'    // password will be used if nul
         }
-        jcenter {
-            url 'releaseUrl'
-            id 'id'
-            username 'username'
-            password 'password'
-            snapshotUrl 'snapshotUrl'
-            snapshotId 'id'
-            snapshotUsername 'username'
-            snapshotPassword 'password'
+        jcenter {                             // any null info will be replaced by publish.maven.jcenter.* from gradle.properties
+            url                 'releaseUrl'
+            id                  'id'          // "bintray-$username-maven" will be used if null
+            packageName         'package'     // project.id will be used if null (since v1.0.1)
+            username            'username'
+            password            'password'
+            snapshotUrl         'snapshotUrl' // url will be used if null
+            snapshotId          'id'          // id will be used if null
+            snapshotPackageName 'package'     // packageName will be used if null
+            snapshotUsername    'username'    // username will be used if nul
+            snapshotPassword    'password'    // password will be used if nul
         }
-        custom {
-            url 'releaseUrl'
-            id 'id'
-            username 'username'
-            password 'password'
-            snapshotUrl 'snapshotUrl'
-            snapshotId 'id'
-            snapshotUsername 'username'
-            snapshotPassword 'password'
+        custom {                              // any null info will be replaced by publish.maven.<target_name>.* from gradle.properties
+            url                 'releaseUrl'
+            id                  'id'          // so far only bintray and jcenter need this
+            packageName         'package'     // so far only bintray and jcenter need this
+            username            'username'
+            password            'password'
+            snapshotUrl         'snapshotUrl' // url will be used if null
+            snapshotId          'id'          // id will be used if null
+            snapshotPackageName 'package'     // packageName will be used if null
+            snapshotUsername    'username'    // username will be used if nul
+            snapshotPassword    'password'    // password will be used if nul
         }
     }
 }
