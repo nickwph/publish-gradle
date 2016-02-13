@@ -16,10 +16,12 @@ class MavenTargetTest {
 
     private Project project;
     private MavenTarget target;
+    private PreferencesExtension extension;
 
     @BeforeMethod
     public void setUp() throws Exception {
         project = ProjectUtils.createJavaProject()
+        extension = new PreferencesExtension(project)
         target = new MavenTarget("");
     }
 
@@ -29,7 +31,7 @@ class MavenTargetTest {
         target.url 'url'
         target.username 'username'
         target.password 'password'
-        target.validate(project)
+        target.validate(project, extension)
         assertEquals target.id, 'id'
         assertEquals target.url, 'url'
         assertEquals target.username, 'username'
@@ -50,7 +52,7 @@ class MavenTargetTest {
         target.snapshotUrl 'snapshotUrl'
         target.snapshotUsername 'snapshotUsername'
         target.snapshotPassword 'snapshotPassword'
-        target.validate(project)
+        target.validate(project, extension)
         assertEquals target.id, 'id'
         assertEquals target.url, 'url'
         assertEquals target.username, 'username'
@@ -66,7 +68,7 @@ class MavenTargetTest {
         target = new MavenTarget(name)
         target.username 'username'
         target.packageName 'package'
-        target.validate(project)
+        target.validate(project, extension)
         assertEquals target.id, id
         assertEquals target.snapshotId, id
         assertEquals target.url, url;

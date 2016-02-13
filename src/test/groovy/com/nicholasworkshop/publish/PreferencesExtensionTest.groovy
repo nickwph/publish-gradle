@@ -83,6 +83,6 @@ class PreferencesExtensionTest {
             }
         })
         extension.validate()
-        verify(target, atLeastOnce()).validate()
+        verify(target, atLeastOnce()).validate(project, extension)
     }
 }
