@@ -15,7 +15,7 @@ class MavenTarget {
 
     static final BINTRAY_NAME = "bintray";
     static final BINTRAY_NAME_2 = "jcenter";
-    static final BINTRAY_RELEASE_URL = "https://api.bintray.com/maven/%s/maven/%s/;publish=1";
+    static final BINTRAY_RELEASE_URL = "https://api.bintray.com/maven/%s/maven/%s";
     static final BINTRAY_SNAPSHOT_URL = "https://oss.jfrog.org/artifactory/list/oss-snapshot-local";
     static final BINTRAY_ID = "bintray-%s-maven";
 
