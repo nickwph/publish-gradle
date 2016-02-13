@@ -3,6 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'jacoco'
 apply plugin: 'signing'
 
+ext.artifactId = "gradle-publish"
 group 'com.nicholasworkshop'
 version '1.0.0'
 
@@ -27,7 +28,7 @@ jacocoTestReport {
 install {
     group 'publish'
     repositories.mavenInstaller {
-        pom.artifactId = "gradle-publish"
+        pom.artifactId = artifactId
     }
 }
 
@@ -59,7 +60,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             pom.groupId = project.group
-            pom.artifactId = project.install.repositories.mavenInstaller.pom.artifactId
+            pom.artifactId = artifactId
             pom.version = project.version
             pom.project {
                 name 'Publish Gradle Plugin'
@@ -86,18 +87,16 @@ uploadArchives {
                 }
             }
             beforeDeployment { MavenDeployment deployment ->
-                project.signing.signPom(deployment)
+                signing.signPom(deployment)
             }
-            def url;
-            if (!project.version.endsWith('SNAPSHOT')) {
-                url = 'https://api.bintray.com/maven/nickwph/maven/publish-gradle/;publish=1'
-            } else {
-                url = 'https://oss.jfrog.org/artifactory/list/oss-snapshot-local'
-            }
+            String packageName = 'publish-gradle'
             String username = getGradleProperty('publish.maven.bintray.username');
             String password = getGradleProperty('publish.maven.bintray.apiKey')
             String id = "bintray-$username-maven"
-            repository(id: id, url: url) {
+            repository(id: id, url: "https://api.bintray.com/maven/$username/maven/$packageName") {
+                authentication(userName: username, password: password)
+            }
+            snapshotRepository(id: id, url: 'https://oss.jfrog.org/artifactory/list/oss-snapshot-local') {
                 authentication(userName: username, password: password)
             }
         }
