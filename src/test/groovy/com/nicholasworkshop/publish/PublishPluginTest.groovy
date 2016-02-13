@@ -87,6 +87,7 @@ public class PublishPluginTest {
             id 'id'
             group 'group'
             version 'version'
+            releaseConfirm false
             mavenTargets {
                 sonatype {
                     url 'releaseUrl'

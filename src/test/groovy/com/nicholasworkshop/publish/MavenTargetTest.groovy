@@ -1,10 +1,12 @@
 package com.nicholasworkshop.publish
 
+import org.gradle.api.Project
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 
 import static com.nicholasworkshop.publish.MavenTarget.*
+import static java.lang.String.format
 import static org.junit.Assert.assertEquals
 
 /**
@@ -12,10 +14,12 @@ import static org.junit.Assert.assertEquals
  */
 class MavenTargetTest {
 
+    private Project project;
     private MavenTarget target;
 
     @BeforeMethod
     public void setUp() throws Exception {
+        project = ProjectUtils.createJavaProject()
         target = new MavenTarget("");
     }
 
@@ -25,7 +29,7 @@ class MavenTargetTest {
         target.url 'url'
         target.username 'username'
         target.password 'password'
-        target.validate()
+        target.validate(project)
         assertEquals target.id, 'id'
         assertEquals target.url, 'url'
         assertEquals target.username, 'username'
@@ -46,7 +50,7 @@ class MavenTargetTest {
         target.snapshotUrl 'snapshotUrl'
         target.snapshotUsername 'snapshotUsername'
         target.snapshotPassword 'snapshotPassword'
-        target.validate()
+        target.validate(project)
         assertEquals target.id, 'id'
         assertEquals target.url, 'url'
         assertEquals target.username, 'username'
@@ -61,7 +65,8 @@ class MavenTargetTest {
     public void testValidate_prePopulateData(String name, String id, String url, String snapshotUrl) throws Exception {
         target = new MavenTarget(name)
         target.username 'username'
-        target.validate()
+        target.packageName 'package'
+        target.validate(project)
         assertEquals target.id, id
         assertEquals target.snapshotId, id
         assertEquals target.url, url;
@@ -70,8 +75,8 @@ class MavenTargetTest {
 
     @DataProvider
     public Object[][] targetNameToId() {
-        return [['bintray', 'bintray-username-maven', BINTRAY_RELEASE_URL, BINTRAY_SNAPSHOT_URL],
-                ['jcenter', 'bintray-username-maven', BINTRAY_RELEASE_URL, BINTRAY_SNAPSHOT_URL],
+        return [['bintray', 'bintray-username-maven', format(BINTRAY_RELEASE_URL, 'username', 'package'), BINTRAY_SNAPSHOT_URL],
+                ['jcenter', 'bintray-username-maven', format(BINTRAY_RELEASE_URL, 'username', 'package'), BINTRAY_SNAPSHOT_URL],
                 ['sonatype', null, SONATYPE_RELEASE_URL, SONATYPE_SNAPSHOT_URL],
                 ['whatever', null, null, null]]
     }
